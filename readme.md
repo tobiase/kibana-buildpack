@@ -1,4 +1,4 @@
-# Buildpack for Kibana
+# scalingo buildpack for Kibana
 
 This buildpack downloads and installs Kibana into a Scalingo app image.
 
@@ -7,6 +7,8 @@ This buildpack downloads and installs Kibana into a Scalingo app image.
 Tested against Kibana 4.5.4 - ES 2.3.4
 
 ## Usage
+
+To deploy your own Kibana, you've to do the following:
 
 ```console
 $ git init
