@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -x
+
 indent() {
   sed -u 's/^/       /'
 }
