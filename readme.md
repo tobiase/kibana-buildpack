@@ -4,7 +4,7 @@ This buildpack downloads and installs Kibana into a Scalingo app image.
 
 ## Compatibility
 
-Tested against Kibana 4.6.1.
+Tested against Kibana 4.5.4 - ES 2.3.4
 
 ## Usage
 
