@@ -1,37 +1,30 @@
-# Heroku Buildpack for Kibana
+# Buildpack for Kibana
 
-This buildpack downloads and installs Kibana into a Heroku app slug. It is a fork of [issueapp/heroku-buildpack-kibana](https://github.com/issueapp/heroku-buildpack-kibana), with some light customization for use as a one-click Heroku Button app.
-
-For a one-click deploy of Kibana on Heroku, see [omc/heroku-kibana](https://github.com/omc/heroku-kibana).
+This buildpack downloads and installs Kibana into a Scalingo app image.
 
 ## Compatibility
 
-Tested against Kibana 4.1.2.
+Tested against Kibana 4.6.1.
 
 ## Usage
 
-See our other repo at https://github.com/omc/heroku-kibana for a one-click deploy of Kibana on Heroku.
+```console
+$ git init
+$ scalingo create my-kibana
+$ scalingo env-set BUILDPACK_URL=https://github.com/Scalingo/kibana-buildpack
 
-Or, to use as a standalone buildpack:
+# If you don't already have an elasticsearch instance from another app
+$ scalingo addons-add scalingo-elasticsearch free
+# If you already have the ES instance, refer its URL
+$ scalingo env-set ELASTICSEARCH_URL="http://user:password@host:port"
 
-    # Create a new project with the --buildpack option
-    $ heroku create --buildpack https://github.com/omc/heroku-buildpack-kibana
+$ echo 'web: kibana --port $PORT' > Procfile
+$ git add Procfile
+$ git push scalingo master
+```
 
-    # ...Or update an existing project with heroku buildpacks:set
-    $ heroku buildpacks:set https://github.com/omc/heroku-buildpack-kibana
+That's it your Kibana is live.
 
-    # Let the buildpack know where to find Kibana
-    $ heroku config:set DOWNLOAD_URL="https://download.elastic.co/kibana/kibana/kibana-4.1.2-linux-x64.tar.gz"
+## Extra configuration
 
-    # Let Kibana know where to find Elasticsearch
-    $ heroku config:set ELASTICSEARCH_URL="https://kibanauser:kibanapass@host.region.bonsai.io"
-
-    # Create a Procfile to run the Kibana web server
-    $ cat Procfile
-    web: kibana --port $PORT
-
-    # Push the above to trigger a deploy
-    $ git push heroku master
-
-    # Verify and profit!
-    $ heroku open
+* `DOWNLOAD_URL`: Source of the kibana archive, default is: `https://download.elastic.co/kibana/kibana/kibana-4.6.1-linux-x86_64.tar.gz`
