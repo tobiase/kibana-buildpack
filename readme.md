@@ -26,7 +26,7 @@ $ git commit -m "Prepare Kibana for Scalingo deployment"
 $ git push scalingo master
 ```
 
-That's it your Kibana is live.
+That's it your Kibana is live, you may have to wait a few seconds to let kibana create its indexes, then refresh and the dashboard will be available.
 
 ## Extra configuration
 
