@@ -1,4 +1,4 @@
-# scalingo buildpack for Kibana
+# Scalingo buildpack for Kibana
 
 This buildpack downloads and installs Kibana into a Scalingo app image.
 
