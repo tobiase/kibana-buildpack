@@ -70,7 +70,7 @@ $extract $CACHE_DIR/$KIBANA_PACKAGE
 echo "-----> Configuring ELASTICSEARCH_URL"
 $configure $KIBANA_DIR/config/kibana.yml
 
-if [ -x "$KIBANA_PLUGINS" ] ; then
+if [ -n "$KIBANA_PLUGINS" ] ; then
   cd $KIBANA_DIR
     for plugin in $KIBANA_PLUGINS ; do
       ./bin/kibana plugin --install "${plugin}"
