@@ -70,7 +70,7 @@ $configure $KIBANA_DIR/config/kibana.yml
 
 
 if [ -f "$BUILD_DIR/kibana-plugins" ] ; then
-  echo "-----> 'kibana-plugins file detected"
+  echo "-----> 'kibana-plugins' file detected"
   cd $KIBANA_DIR
     cat "${BUILD_DIR}/kibana-plugins" | while read line ; do
       plugin=$(echo $line | awk '{print $1}')
