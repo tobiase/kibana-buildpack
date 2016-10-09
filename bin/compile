@@ -68,10 +68,20 @@ $extract $CACHE_DIR/$KIBANA_PACKAGE
 echo "-----> Configuring ELASTICSEARCH_URL"
 $configure $KIBANA_DIR/config/kibana.yml
 
-if [ -n "$KIBANA_PLUGINS" ] ; then
+
+if [ -f "$BUILD_DIR/kibana-plugins" ] ; then
+  echo "-----> 'kibana-plugins file detected"
   cd $KIBANA_DIR
-    for plugin in $KIBANA_PLUGINS ; do
-      ./bin/kibana plugin --install "${plugin}"
+    cat "${BUILD_DIR}/kibana_plugins" | while read line ; do
+      plugin=$(echo $line | awk '{print $1}')
+      echo "       Installing Kibana plugin '${plugin}'"
+
+      url=$(echo $line | awk '{print $2}')
+      if [ -n "$url" ] ; then
+        ./bin/kibana plugin --install "${plugin}" --url "${url}" | indent
+      else
+        ./bin/kibana plugin --install "${plugin}" | indent
+      fi
     done
   cd $BUILD_DIR
 fi
@@ -80,5 +90,5 @@ echo "Exporting PATH" | indent
 
 cat <<EOF > $INIT_SCRIPT
 export PATH="$PATH:${KIBANA_DIR##*/}/bin"
-export NODE_OPTIONS="--max-old-space-size=512"
+export NODE_OPTIONS="${NODE_OPTIONS:-"--max-old-space-size=512"}"
 EOF
