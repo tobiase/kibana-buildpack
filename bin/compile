@@ -121,7 +121,7 @@ echo "Boot failed: \$exitproc"
 exit 1
 SH
 
-  chmod +x "{$KIBANA_DIR}/bin/kibana"
+  chmod +x "${KIBANA_DIR}/bin/kibana"
 fi
 
 echo "Exporting PATH" | indent
