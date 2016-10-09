@@ -44,6 +44,13 @@ elastic/sense
 logtrail https://github.com/sivasamyk/logtrail/releases/download/0.1.4/logtrail-4.x-0.1.4.tar.gz
 ```
 
+## Security
+
+If bother environment variables `KIBANA_USER` and `KIBANA_PASSWORD` are
+defined, we'll deploy *nginx* alongside *Kibana*. All the requests will be
+authenticating by nginx before being proxied to Kibana. The latter is not
+longer directly reachable from the Internet.
+
 ## Extra configuration
 
 * `DOWNLOAD_URL`: Source of the kibana archive, default is: `https://download.elastic.co/kibana/kibana/kibana-4.6.1-linux-x86_64.tar.gz`
