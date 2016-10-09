@@ -96,10 +96,15 @@ if [[ -n "$KIBANA_USER" && -n "$KIBANA_PASSWORD" ]] ; then
   printf "$KIBANA_USER:$(openssl passwd -1 -salt $(openssl rand -base64 6) $KIBANA_PASSWORD)" > $BUILD_DIR/.kibana-password
   mv "${KIBANA_DIR}/bin/kibana" "${KIBANA_DIR}/bin/kibana.orig"
   cp "$basedir/../conf/nginx.conf.erb" "$BUILD_DIR/vendor/nginx/conf/nginx.conf.erb"
+
+  cat > "$BUILD_DIR/.profile.d/nginx.sh" <<SH
+export PATH=/app/vendor/nginx/sbin:\$PATH
+SH
+
   cat > "$KIBANA_DIR/bin/kibana" <<SH
 #!/usr/bin/env bash
 
-basedir="\$( cd -P "\$(dirname \$(dirname "\$0" ))" && pwd )"
+basedir="\$( cd -P "\$(dirname \$(dirname \$(dirname "\$0" )))" && pwd )"
 pmsgr=/tmp/pmsgr
 rm -f \$pmsgr
 mkfifo \$pmsgr
