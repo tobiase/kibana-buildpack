@@ -26,7 +26,23 @@ $ git commit -m "Prepare Kibana for Scalingo deployment"
 $ git push scalingo master
 ```
 
-That's it your Kibana is live, you may have to wait a few seconds to let kibana create its indexes, then refresh and the dashboard will be available.
+That's it your Kibana is live, you may have to wait a few seconds to let kibana
+create its indexes, then refresh and the dashboard will be available.
+
+## Plugins
+
+You may want to install plugins to your Kibana installation like
+[Sense](https://www.elastic.co/guide/en/sense/current/installing.html).  To do
+that, just create a file `kibana-plugins` with the names of the plugins you
+wish to install. If you need to install a plugin from a custom URL, just
+specify it after the name of the plugin.
+
+Example of `kibana-plugins` file:
+
+```
+elastic/sense
+logtrail https://github.com/sivasamyk/logtrail/releases/download/0.1.4/logtrail-4.x-0.1.4.tar.gz
+```
 
 ## Extra configuration
 
