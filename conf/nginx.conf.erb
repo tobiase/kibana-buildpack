@@ -71,9 +71,26 @@ http {
         auth_basic "Protected Kibana";
         auth_basic_user_file /app/.kibana-password;
 
-        location / {
-            proxy_pass "http://127.0.0.1:8000";
+        # This endpoint expect ES authentication, so no need for additional auth
+        location ~ ^/api/sense/proxy {
+          auth_basic off;
+          proxy_pass "http://127.0.0.1:8000";
+        }
+
+        # Do not forward Authorization header, otherwise Kibana use it to authenticate ES, which will fail
+        # Let Kibana proxy the authentication from the configuration file
+        location ~ ^/logtrail/validate/es {
+          proxy_set_header Authorization "";
+          proxy_pass "http://127.0.0.1:8000";
+        }
+
+        location ~ ^/elasticsearch  {
+          proxy_set_header Authorization "";
+          proxy_pass "http://127.0.0.1:8000";
+        }
+
+        location ~ / {
+          proxy_pass "http://127.0.0.1:8000";
         }
     }
 }
-
