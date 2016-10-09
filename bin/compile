@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 indent() {
   sed -u 's/^/       /'
