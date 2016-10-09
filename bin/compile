@@ -25,6 +25,7 @@ else
 fi
 
 KIBANA_PACKAGE=${DOWNLOAD_URL##*/}
+KIBANA_BASE_DIR=$(basename $KIBANA_PACKAGE .tar.gz)
 
 case ${KIBANA_PACKAGE} in
   *.tar.gz)
@@ -117,7 +118,7 @@ erb "\$basedir/vendor/nginx/conf/nginx.conf.erb" > "\$basedir/vendor/nginx/conf/
 ) &
 
 (
-    nginx -p "\$basedir/${KIBANA_DIR}/bin/kibana.orig" --port 8000
+    "\$basedir/${KIBANA_BASE_DIR}/bin/kibana.orig" --port 8000
     echo "kibana" > \$pmsgr
 ) &
 
