@@ -41,7 +41,7 @@ esac
 mkdir="mkdir -p"
 download="curl -sLO"
 extract="$tar -C $BUILD_DIR --wildcards -f"
-verify="sha1sum --check --warn"
+verify="sha1sum --check --warn -"
 configure='sed -i s/\#\x20\(elasticsearch.url:\x20\).\{1,\}/\1"'$(echo $ELASTICSEARCH_URL | sed 's/\//\\\//g')'"/'
 
 
@@ -56,7 +56,7 @@ if [ ! -f "$CACHE_DIR/$KIBANA_PACKAGE" ]; then
 
   echo "verifying against ${DOWNLOAD_URL}.sha1" | indent
   $download "${DOWNLOAD_URL}.sha1"
-  $verify "${KIBANA_PACKAGE}.sha1"
+  echo "$(cat $KIBANA_PACKAGE.sha1) $KIBANA_PACKAGE" | $verify
 
   if [ $? -eq 0 ]; then
     mv $KIBANA_PACKAGE $CACHE_DIR
