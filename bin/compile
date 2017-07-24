@@ -45,9 +45,10 @@ mkdir="mkdir -p"
 download="curl -sLO"
 extract="$tar -C $BUILD_DIR --wildcards -f"
 verify="sha1sum --check --warn -"
-configure='sed -i -r s/\#(elasticsearch.url:\x20).{1,}/\1"'$(echo $ELASTICSEARCH_URL | sed 's/\//\\\//g')'"/'
-configure_user='sed -i -r s/\#(elasticsearch.username:\x20).{1,}/\1"'$(echo $ELASTICSEARCH_USER | sed 's/\//\\\//g')'"/'
-configure_password='sed -i -r s/\#(elasticsearch.password:\x20).{1,}/\1"'$(echo $ELASTICSEARCH_PASSWORD | sed 's/\//\\\//g')'"/'
+configure_url='sed -i -r s/\#(elasticsearch.url:\x20).{1,}/\1"'$(echo $ELASTICSEARCH_URL | sed 's/\//\\\//g')'"/'
+configure_host='sed -i -r s/\#(server.host:\x20).{1,}/\1"0.0.0.0"/'
+configure_user='sed -i -r s/\#(elasticsearch.username:\x20).{1,}/\1"'$ELASTICSEARCH_USER'"/'
+configure_password='sed -i -r s/\#(elasticsearch.password:\x20).{1,}/\1"'$ELASTICSEARCH_PASSWORD'"/'
 
 
 echo "-----> Installing Kibana..."
@@ -72,8 +73,10 @@ fi
 
 $extract $CACHE_DIR/$KIBANA_PACKAGE
 
+echo "-----> Configuring host"
+$configure_host $KIBANA_DIR/config/kibana.yml
 echo "-----> Configuring ELASTICSEARCH_URL"
-$configure $KIBANA_DIR/config/kibana.yml
+$configure_url $KIBANA_DIR/config/kibana.yml
 if [[ -n "$ELASTICSEARCH_PASSWORD" && -n "$ELASTICSEARCH_PASSWORD" ]] ; then
   echo "-----> Configuring elasticsearch credientials"
   $configure_user $KIBANA_DIR/config/kibana.yml
