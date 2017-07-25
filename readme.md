@@ -32,15 +32,24 @@ create its indexes, then refresh and the dashboard will be available.
 ## Plugins
 
 You may want to install plugins to your Kibana installation like
-[Sense](https://www.elastic.co/guide/en/sense/current/installing.html).  To do
-that, just create a file `kibana-plugins` with the names of the plugins you
-wish to install. If you need to install a plugin from a custom URL, just
-specify it after the name of the plugin.
+[logtrail](https://github.com/sivasamyk/logtrail). To do
+that, just create a file `kibana-plugins` with the urls of the plugins you
+wish to install.
 
 Example of `kibana-plugins` file:
 
 ```
 https://github.com/sivasamyk/logtrail/releases/download/v0.1.18/logtrail-5.5.0-0.1.18.zip
+```
+
+## Plugins configuration
+
+You may want to configure your plugins. To do that, just create a file 'plugins-config' with the local path of your config file and the path where this config file should be stored in the plugins directory.
+
+Example of 'plugins-config' for the 'logtrail.json' file:
+
+```
+logtrail.json:logtrail/logtrail.json
 ```
 
 ## Security
