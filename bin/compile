@@ -86,16 +86,9 @@ fi
 if [ -f "$BUILD_DIR/kibana-plugins" ] ; then
   echo "-----> 'kibana-plugins' file detected"
   cd $KIBANA_DIR
-    cat "${BUILD_DIR}/kibana-plugins" | while read line ; do
-      plugin=$(echo $line | awk '{print $1}')
+    cat "${BUILD_DIR}/kibana-plugins" | while read plugin ; do
       echo "       Installing Kibana plugin '${plugin}'"
-
-      url=$(echo $line | awk '{print $2}')
-      if [ -n "$url" ] ; then
-        ./bin/kibana plugin --install "${plugin}" --url "${url}" | indent
-      else
-        ./bin/kibana plugin --install "${plugin}" | indent
-      fi
+      ./bin/kibana-plugin install "${plugin}" | indent
     done
   cd $BUILD_DIR
 fi
