@@ -93,6 +93,16 @@ if [ -f "$BUILD_DIR/kibana-plugins" ] ; then
   cd $BUILD_DIR
 fi
 
+if [ -f "$BUILD_DIR/plugins-config" ] ; then
+  echo "-----> 'plugins-config' file detected"
+  cat "${BUILD_DIR}/plugins-config" | while read config ; do
+    localfile=$(echo $config | cut -d ':' -f 1)
+    remotefile=$(echo $config | cut -d ':' -f 2)
+    echo "       Applying configuration '${localfile}'"
+    cp $localfile "${KIBANA_DIR}/plugins/${remotefile}"
+  done
+fi
+
 if [[ -n "$KIBANA_USER" && -n "$KIBANA_PASSWORD" ]] ; then
   echo "-----> 'KIABANA_PASSWORD detected, installing reverse proxy for authentication"
   $mkdir "${BUILD_DIR}/vendor/nginx"
