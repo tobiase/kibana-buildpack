@@ -4,7 +4,7 @@ This buildpack downloads and installs Kibana into a Scalingo app image.
 
 ## Compatibility
 
-Tested against Kibana 4.5.4 - ES 2.3.4
+Tested against Kibana 5.5.0 - ES 5.5.0
 
 ## Usage
 
@@ -40,8 +40,7 @@ specify it after the name of the plugin.
 Example of `kibana-plugins` file:
 
 ```
-elastic/sense
-logtrail https://github.com/sivasamyk/logtrail/releases/download/0.1.4/logtrail-4.x-0.1.4.tar.gz
+https://github.com/sivasamyk/logtrail/releases/download/v0.1.18/logtrail-5.5.0-0.1.18.zip
 ```
 
 ## Security
@@ -53,4 +52,4 @@ longer directly reachable from the Internet.
 
 ## Extra configuration
 
-* `DOWNLOAD_URL`: Source of the kibana archive, default is: `https://download.elastic.co/kibana/kibana/kibana-4.6.1-linux-x86_64.tar.gz`
+* `DOWNLOAD_URL`: Source of the kibana archive, default is: `https://artifacts.elastic.co/downloads/kibana/kibana-5.5.0-linux-x86_64.tar.gz`
