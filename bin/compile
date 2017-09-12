@@ -21,7 +21,7 @@ fi
 if [ -f "$ENV_DIR/DOWNLOAD_URL" ]; then
   DOWNLOAD_URL=$(cat $ENV_DIR/DOWNLOAD_URL)
 else
-  DOWNLOAD_URL="https://download.elastic.co/kibana/kibana/kibana-4.5.4-linux-x64.tar.gz"
+  DOWNLOAD_URL="https://artifacts.elastic.co/downloads/kibana/kibana-5.5.0-linux-x86_64.tar.gz"
 fi
 
 KIBANA_PACKAGE=${DOWNLOAD_URL##*/}
@@ -38,11 +38,17 @@ case ${KIBANA_PACKAGE} in
     ;;
 esac
 
+
+eval $(echo $ELASTICSEARCH_URL | sed -r 's/(https?:\/\/)((.*):(.*)@){0,1}(.*)/ELASTICSEARCH_URL=\1\5 \nELASTICSEARCH_USER=\3 \nELASTICSEARCH_PASSWORD=\4/')
+
 mkdir="mkdir -p"
 download="curl -sLO"
 extract="$tar -C $BUILD_DIR --wildcards -f"
-verify="sha1sum --check --warn"
-configure='sed -i s/\#\x20\(elasticsearch.url:\x20\).\{1,\}/\1"'$(echo $ELASTICSEARCH_URL | sed 's/\//\\\//g')'"/'
+verify="sha1sum --check --warn -"
+configure_url='sed -i -r s/\#(elasticsearch.url:\x20).{1,}/\1"'$(echo $ELASTICSEARCH_URL | sed 's/\//\\\//g')'"/'
+configure_host='sed -i -r s/\#(server.host:\x20).{1,}/\1"0.0.0.0"/'
+configure_user='sed -i -r s/\#(elasticsearch.username:\x20).{1,}/\1"'$ELASTICSEARCH_USER'"/'
+configure_password='sed -i -r s/\#(elasticsearch.password:\x20).{1,}/\1"'$ELASTICSEARCH_PASSWORD'"/'
 
 
 echo "-----> Installing Kibana..."
@@ -54,9 +60,9 @@ if [ ! -f "$CACHE_DIR/$KIBANA_PACKAGE" ]; then
   echo "downloading $DOWNLOAD_URL" | indent
   $download $DOWNLOAD_URL
 
-  echo "verifying against ${DOWNLOAD_URL}.sha1.txt" | indent
-  $download "${DOWNLOAD_URL}.sha1.txt"
-  $verify "${KIBANA_PACKAGE}.sha1.txt"
+  echo "verifying against ${DOWNLOAD_URL}.sha1" | indent
+  $download "${DOWNLOAD_URL}.sha1"
+  echo "$(cat $KIBANA_PACKAGE.sha1) $KIBANA_PACKAGE" | $verify
 
   if [ $? -eq 0 ]; then
     mv $KIBANA_PACKAGE $CACHE_DIR
@@ -67,25 +73,34 @@ fi
 
 $extract $CACHE_DIR/$KIBANA_PACKAGE
 
+echo "-----> Configuring host"
+$configure_host $KIBANA_DIR/config/kibana.yml
 echo "-----> Configuring ELASTICSEARCH_URL"
-$configure $KIBANA_DIR/config/kibana.yml
-
+$configure_url $KIBANA_DIR/config/kibana.yml
+if [[ -n "$ELASTICSEARCH_USER" && -n "$ELASTICSEARCH_PASSWORD" ]] ; then
+  echo "-----> Configuring elasticsearch credientials"
+  $configure_user $KIBANA_DIR/config/kibana.yml
+  $configure_password $KIBANA_DIR/config/kibana.yml
+fi
 
 if [ -f "$BUILD_DIR/kibana-plugins" ] ; then
   echo "-----> 'kibana-plugins' file detected"
   cd $KIBANA_DIR
-    cat "${BUILD_DIR}/kibana-plugins" | while read line ; do
-      plugin=$(echo $line | awk '{print $1}')
+    cat "${BUILD_DIR}/kibana-plugins" | while read plugin ; do
       echo "       Installing Kibana plugin '${plugin}'"
-
-      url=$(echo $line | awk '{print $2}')
-      if [ -n "$url" ] ; then
-        ./bin/kibana plugin --install "${plugin}" --url "${url}" | indent
-      else
-        ./bin/kibana plugin --install "${plugin}" | indent
-      fi
+      ./bin/kibana-plugin install "${plugin}" | indent
     done
   cd $BUILD_DIR
+fi
+
+if [ -f "$BUILD_DIR/plugins-config" ] ; then
+  echo "-----> 'plugins-config' file detected"
+  cat "${BUILD_DIR}/plugins-config" | while read config ; do
+    localfile=$(echo $config | cut -d ':' -f 1)
+    remotefile=$(echo $config | cut -d ':' -f 2)
+    echo "       Applying configuration '${localfile}'"
+    cp $localfile "${KIBANA_DIR}/plugins/${remotefile}"
+  done
 fi
 
 if [[ -n "$KIBANA_USER" && -n "$KIBANA_PASSWORD" ]] ; then
@@ -109,6 +124,13 @@ basedir="\$( cd -P "\$(dirname \$(dirname \$(dirname "\$0" )))" && pwd )"
 pmsgr=/tmp/pmsgr
 rm -f \$pmsgr
 mkfifo \$pmsgr
+
+
+eval $(echo $ELASTICSEARCH_URL | sed -r 's/(https?:\/\/)((.*):(.*)@){0,1}(.*)/ELASTICSEARCH_URL=\1\5 \nELASTICSEARCH_USER=\3 \nELASTICSEARCH_PASSWORD=\4/')
+
+if [[ -n "$ELASTICSEARCH_USER" && -n "$ELASTICSEARCH_PASSWORD" ]] ; then
+  export ELASTICSEARCH_AUTH=$(echo -n $ELASTICSEARCH_USER:$ELASTICSEARCH_PASSWORD | base64)
+fi
 
 erb "\$basedir/vendor/nginx/conf/nginx.conf.erb" > "\$basedir/vendor/nginx/conf/nginx.conf"
 
