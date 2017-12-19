@@ -33,12 +33,12 @@ create its indexes, then refresh and the dashboard will be available.
 
 ### HTTPS with self-signed certificate
 
-Use the environment variable `ELASICSEARCH_CA_TLS_URL` to specify an URL to
+Use the environment variable `ELASICSEARCH_TLS_CA_URL` to specify an URL to
 download the certificate from like
 [https://db-api.scalingo.com/api/ca_certificate](https://db-api.scalingo.com/api/ca_certificate).
 
 Alternatively you can add the CA to your GIT repository and configure its path
-with the variable `ELASTICSEARCH_CA_TLS_PATH` (example: `ca.crt`)
+with the variable `ELASTICSEARCH_TLS_CA_PATH` (example: `ca.crt`)
 
 ## Plugins
 
