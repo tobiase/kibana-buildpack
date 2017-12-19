@@ -29,6 +29,17 @@ $ git push scalingo master
 That's it your Kibana is live, you may have to wait a few seconds to let kibana
 create its indexes, then refresh and the dashboard will be available.
 
+## Elasticsearch Configuration
+
+### HTTPS with self-signed certificate
+
+Use the environment variable `ELASICSEARCH_CA_TLS_URL` to specify an URL to
+download the certificate from like
+[https://db-api.scalingo.com/api/ca_certificate](https://db-api.scalingo.com/api/ca_certificate).
+
+Alternatively you can add the CA to your GIT repository and configure its path
+with the variable `ELASTICSEARCH_CA_TLS_PATH` (example: `ca.crt`)
+
 ## Plugins
 
 You may want to install plugins to your Kibana installation like
