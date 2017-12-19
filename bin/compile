@@ -104,12 +104,16 @@ if [ -f "$BUILD_DIR/plugins-config" ] ; then
   done
 fi
 
-echo "-----> 'Installing reverse proxy for authentication"
+echo "-----> Installing reverse proxy for authentication"
 $mkdir "${BUILD_DIR}/vendor/nginx"
 NGINX_VERSION="${NGINX_VERSION:-1.10.1}"
 NGINX_URL="https://storage.sbg1.cloud.ovh.net/v1/AUTH_be65d32d71a6435589a419eac98613f2/scalingo-php-buildpack/package/nginx-${NGINX_VERSION}.tgz"
 curl --fail --retry 3 --retry-delay 2 --connect-timeout 3 --max-time 30 -s "$NGINX_URL" | tar -C "$BUILD_DIR/vendor/nginx" -xzf -
-printf "$KIBANA_USER:$(openssl passwd -1 -salt $(openssl rand -base64 6) $KIBANA_PASSWORD)" > $BUILD_DIR/.kibana-password
+
+if [ -n "$KIBANA_USER" -a -n "$KIBANA_PASSWORD" ] ; then
+  printf "$KIBANA_USER:$(openssl passwd -1 -salt $(openssl rand -base64 6) $KIBANA_PASSWORD)" > $BUILD_DIR/.kibana-password
+fi
+
 mv "${KIBANA_DIR}/bin/kibana" "${KIBANA_DIR}/bin/kibana.orig"
 cp "$basedir/../conf/nginx.conf.erb" "$BUILD_DIR/vendor/nginx/conf/nginx.conf.erb"
 
