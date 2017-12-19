@@ -68,8 +68,10 @@ http {
 
         charset utf-8;
 
-        auth_basic "Protected Kibana";
-        auth_basic_user_file /app/.kibana-password;
+        <% if ENV["KIBANA_USER"] && ENV["KIBANA_PASSWORD"] %>
+          auth_basic "Protected Kibana";
+          auth_basic_user_file /app/.kibana-password;
+        <% end %>
 
         location ~ / {
           <% if ENV['ELASTICSEARCH_AUTH'] %>

@@ -77,6 +77,7 @@ echo "-----> Configuring host"
 $configure_host $KIBANA_DIR/config/kibana.yml
 echo "-----> Configuring ELASTICSEARCH_URL"
 $configure_url $KIBANA_DIR/config/kibana.yml
+
 if [[ -n "$ELASTICSEARCH_USER" && -n "$ELASTICSEARCH_PASSWORD" ]] ; then
   echo "-----> Configuring elasticsearch credientials"
   $configure_user $KIBANA_DIR/config/kibana.yml
@@ -103,15 +104,14 @@ if [ -f "$BUILD_DIR/plugins-config" ] ; then
   done
 fi
 
-if [[ -n "$KIBANA_USER" && -n "$KIBANA_PASSWORD" ]] ; then
-  echo "-----> 'KIABANA_PASSWORD detected, installing reverse proxy for authentication"
-  $mkdir "${BUILD_DIR}/vendor/nginx"
-  NGINX_VERSION="${NGINX_VERSION:-1.10.1}"
-  NGINX_URL="https://storage.sbg1.cloud.ovh.net/v1/AUTH_be65d32d71a6435589a419eac98613f2/scalingo-php-buildpack/package/nginx-${NGINX_VERSION}.tgz"
-  curl --fail --retry 3 --retry-delay 2 --connect-timeout 3 --max-time 30 -s "$NGINX_URL" | tar -C "$BUILD_DIR/vendor/nginx" -xzf -
-  printf "$KIBANA_USER:$(openssl passwd -1 -salt $(openssl rand -base64 6) $KIBANA_PASSWORD)" > $BUILD_DIR/.kibana-password
-  mv "${KIBANA_DIR}/bin/kibana" "${KIBANA_DIR}/bin/kibana.orig"
-  cp "$basedir/../conf/nginx.conf.erb" "$BUILD_DIR/vendor/nginx/conf/nginx.conf.erb"
+echo "-----> 'Installing reverse proxy for authentication"
+$mkdir "${BUILD_DIR}/vendor/nginx"
+NGINX_VERSION="${NGINX_VERSION:-1.10.1}"
+NGINX_URL="https://storage.sbg1.cloud.ovh.net/v1/AUTH_be65d32d71a6435589a419eac98613f2/scalingo-php-buildpack/package/nginx-${NGINX_VERSION}.tgz"
+curl --fail --retry 3 --retry-delay 2 --connect-timeout 3 --max-time 30 -s "$NGINX_URL" | tar -C "$BUILD_DIR/vendor/nginx" -xzf -
+printf "$KIBANA_USER:$(openssl passwd -1 -salt $(openssl rand -base64 6) $KIBANA_PASSWORD)" > $BUILD_DIR/.kibana-password
+mv "${KIBANA_DIR}/bin/kibana" "${KIBANA_DIR}/bin/kibana.orig"
+cp "$basedir/../conf/nginx.conf.erb" "$BUILD_DIR/vendor/nginx/conf/nginx.conf.erb"
 
   cat > "$BUILD_DIR/.profile.d/nginx.sh" <<SH
 export PATH=/app/vendor/nginx/sbin:\$PATH
@@ -158,8 +158,7 @@ echo "Boot failed: \$exitproc"
 exit 1
 SH
 
-  chmod +x "${KIBANA_DIR}/bin/kibana"
-fi
+chmod +x "${KIBANA_DIR}/bin/kibana"
 
 echo "Exporting PATH" | indent
 
